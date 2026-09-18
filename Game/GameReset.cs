@@ -13,6 +13,7 @@ public class GameReset : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // If the player decides to reset game, it orders everything to reset to its default values
         if(GameData.resetGame)
         {
             GameData.resetGame = false;

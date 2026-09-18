@@ -6,6 +6,8 @@ public class Parcel : MonoBehaviour
 {
     public GameObject player;
     public GameObject parcelUI;
+
+    // Store the sprites for the parce
     public Sprite[] parcelSpritesUI;
 
     SpriteRenderer ParcelRender;
@@ -23,11 +25,13 @@ public class Parcel : MonoBehaviour
         ParcelRender = GetComponent<SpriteRenderer>();
         ParcelUIRender = parcelUI.GetComponent<SpriteRenderer>();
 
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
         }
 
+        // Shows whether the player has the parcel or not in the UI
         if (!PlayerData.playerItem)
         {
             ParcelUIRender.sprite = parcelSpritesUI[1];
@@ -38,6 +42,7 @@ public class Parcel : MonoBehaviour
             ParcelUIRender.sprite = parcelSpritesUI[0];
         }
 
+        // Checks whether the player can pick up the parcel and if they can they get it and any enemies holding parcels will lose them
         if (Vector2.Distance(transform.position, player.transform.position) < 0.5f && !PlayerData.playerItem)
         {
             PlayerData.playerItem = true;
@@ -51,12 +56,14 @@ public class Parcel : MonoBehaviour
             VillagerData.villagerParcel[targetVillager] = true;
         }
 
+        // If the player is inside the big house it will appear in the big house
         if(!PlayerData.insideBigHouse)
         {
             ParcelRender.sortingOrder = 0;
         }
 
-        if(PlayerData.insideBigHouse)
+        // If the player is not inside the big house it will not appear in the big house
+        if (PlayerData.insideBigHouse)
         {
             if(!PlayerData.playerItem)
             {

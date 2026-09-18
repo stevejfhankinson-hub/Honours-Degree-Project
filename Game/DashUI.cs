@@ -21,6 +21,7 @@ public class DashUI : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Works out the difference between a empty and full dash meter's size and position
         meterHeight = fullMeterHeight;
         meterScale = fullMeterScale;
         heightDifference = (emptyMeterHeight - fullMeterHeight) / ((PlayerData.dashCooldownTimeMax + PlayerData.dashingTimeMax) * 1f) / (1 / Time.deltaTime);
@@ -30,17 +31,20 @@ public class DashUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
         }
 
+        // If the dash meter is not full it will work out the new size and position of the dash meter
         if (meterScale < fullMeterScale)
         {
             meterScale += scaleDifference * GameData.timeSpeed;
             meterHeight -= heightDifference * GameData.timeSpeed;
         }
 
+        // Emptys the dash meter when the player does a dash
         if(PlayerData.dashing && !setStart)
         {
             meterHeight = emptyMeterHeight;
@@ -48,6 +52,7 @@ public class DashUI : MonoBehaviour
             setStart = true;
         }
 
+        // Updates the dash meter size and position
         if (!PlayerData.dashCooldown && setStart)
         {
             setStart = false;
@@ -56,6 +61,7 @@ public class DashUI : MonoBehaviour
         transform.position = new Vector3(transform.position.x, MainCamera.transform.position.y + 4.96f + meterHeight, transform.position.z);
         transform.localScale = new Vector3(transform.localScale.x, meterScale, transform.localScale.z);
 
+        // Resets the dash meter to its default values
         if (PlayerData.resetDashUI)
         {
             transform.position = new Vector3(transform.position.x, 0.09000015f, 1f);

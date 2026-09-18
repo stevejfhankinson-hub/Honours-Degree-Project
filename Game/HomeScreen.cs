@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Windows;
 using static UnityEngine.Timeline.DirectorControlPlayable;
 
 public class HomeScreen : MonoBehaviour
@@ -18,8 +19,10 @@ public class HomeScreen : MonoBehaviour
     public TextMeshPro controlsText;
     public TextMeshPro exitText;
 
+    // Store the sprites for the buttons
     public Sprite[] buttons;
 
+    // Store the input actions for selecting, moving left and moving right in the pause menu
     public InputAction pauseNavigateSelect;
     public InputAction pauseNavigateLeft;
     public InputAction pauseNavigateRight;
@@ -33,9 +36,7 @@ public class HomeScreen : MonoBehaviour
     MeshRenderer controlsTextRenderer;
     MeshRenderer exitTextRenderer;
 
-
-    //int homeMenuPosition = -1;
-
+    // Enables the input actions and makes them call the functions for them
     private void OnEnable()
     {
         pauseNavigateLeft.Enable();
@@ -47,6 +48,8 @@ public class HomeScreen : MonoBehaviour
         pauseNavigateSelect.Enable();
         pauseNavigateSelect.performed += startPauseNavigateSelect;
     }
+
+    // Disables the input actions
     private void OnDisable()
     {
         pauseNavigateLeft.Disable();
@@ -73,6 +76,7 @@ public class HomeScreen : MonoBehaviour
         controlsTextRenderer = controlsText.GetComponent<MeshRenderer>();
         exitTextRenderer = exitText.GetComponent<MeshRenderer>();
 
+        // Gives a cooldown to after pressing a button so it doesn't continuously scroll through the menu options.
         if (GameData.buttonCooldown)
         {
             GameData.buttonCooldownTime += 1 / (1f / Time.deltaTime);
@@ -84,17 +88,15 @@ public class HomeScreen : MonoBehaviour
             }
         }
 
+        // Works out the position of the menu you are in and loops you back to start and back to the end.
+        // Adjusts what should be visable based on the menu position and can let you select that option
         if (GameData.homeMenuPosition >= 3)
         {
             GameData.homeMenuPosition = 0;
 
         }
 
-        if (GameData.homeMenuPosition <= -2)
-        {
-            //menuPosition = 2;
-        }
-
+        // The inital start screen where you can press start to go the main screen
         if (GameData.homeMenuPosition == -1)
         {
             playRenderer.sortingOrder = -1;
@@ -124,6 +126,7 @@ public class HomeScreen : MonoBehaviour
             
         }
 
+        // If you are in the main menu, it will show the buttons
         if (GameData.homeMenuPosition != -1)
         {
             spaceTextRenderer.sortingOrder = -1;
@@ -133,6 +136,7 @@ public class HomeScreen : MonoBehaviour
             exitTextRenderer.sortingOrder = 2;
         }
 
+        // Highlights the button to let you play and pressing start lets the game begin
         if (GameData.homeMenuPosition == 0)
         {
             playRenderer.sprite = buttons[1];
@@ -152,6 +156,7 @@ public class HomeScreen : MonoBehaviour
             }
         }
 
+        // Highlights the button to let you view the controls and pressing start lets you view the controls
         if (GameData.homeMenuPosition == 1)
         {
             playRenderer.sprite = buttons[0];
@@ -171,6 +176,7 @@ public class HomeScreen : MonoBehaviour
             }
         }
 
+        // Highlights the button to let you exit the game and pressing start lets you exit the game
         if (GameData.homeMenuPosition == 2)
         {
             playRenderer.sprite = buttons[0];
@@ -184,6 +190,7 @@ public class HomeScreen : MonoBehaviour
             }
         }
 
+        // Shows the controls and tapping start takes you main to the main screen
         if(GameData.showControls)
         {
             spaceTextRenderer.sortingOrder = -1;

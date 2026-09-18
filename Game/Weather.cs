@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Weather : MonoBehaviour
 {
+    // Store the sprites for rain and fog
     public Sprite[] RainSprites;
     public Sprite[] FogSprites;
 
@@ -28,6 +29,7 @@ public class Weather : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
@@ -37,6 +39,8 @@ public class Weather : MonoBehaviour
 
         weatherTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
 
+        // Once the weather is meant to stop it stops it
+        // The next weather start time and stop time is randomly generated between different numbers
         if (weatherTime >= endWeatherTime)
         {
             weatherTime = 0f;
@@ -48,11 +52,13 @@ public class Weather : MonoBehaviour
             GameData.isRaining = false;
         }
 
+        // Hides the weather when it is not active
         if(weatherTime < startWeatherTime)
         {
             WeatherRender.sortingOrder = 0;
         }
 
+        // Once the weather can start makes it appear and randomly picks between rain and fog
         if (weatherTime >= startWeatherTime && !GameData.isRaining && !GameData.isFog)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, -9);
@@ -73,6 +79,7 @@ public class Weather : MonoBehaviour
 
         animationTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
 
+        // If it is meant to be raining and foggy it stops these both from happening
         if (!GameData.isRaining && !GameData.isFog)
         {
             weatherRandom = 2;
@@ -85,6 +92,7 @@ public class Weather : MonoBehaviour
             animationTime = 0f;
         }
 
+        // Displays the right sprites for each whether with the rain one being animated
         if (GameData.isRaining)
         {
             if(animationTime < animationMax / 2f)

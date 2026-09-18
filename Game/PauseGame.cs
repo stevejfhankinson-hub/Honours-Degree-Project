@@ -15,6 +15,7 @@ public class PauseGame : MonoBehaviour
     public TextMeshPro resume;
     public TextMeshPro exit;
 
+    // Store the input actions for action, navigating up, navigating down and selecting in the pause menu
     public InputAction pauseAction;
     public InputAction pauseNavigateSelect;
     public InputAction pauseNavigateUp;
@@ -30,6 +31,7 @@ public class PauseGame : MonoBehaviour
     MeshRenderer resumeRender;
     MeshRenderer exitRender;
 
+    // Enables the input actions and makes them call the functions for them
     private void OnEnable()
     {
         pauseAction.Enable();
@@ -44,6 +46,8 @@ public class PauseGame : MonoBehaviour
         pauseNavigateSelect.Enable();
         pauseNavigateSelect.performed += startPauseNavigateSelect;
     }
+
+    // Disables the input actions
     private void OnDisable()
     {
         pauseAction.Disable();
@@ -69,6 +73,7 @@ public class PauseGame : MonoBehaviour
         resumeRender = resume.GetComponent<MeshRenderer>();
         exitRender = exit.GetComponent<MeshRenderer>();
 
+        // If the game is paused, it bring up the UI for the pause screen
         if(GameData.isPaused)
         {
             GameData.menuCooldown = true;
@@ -77,7 +82,10 @@ public class PauseGame : MonoBehaviour
             exitRender.sortingOrder = GameData.layerUI + 3;
             arrowRender.sortingOrder = GameData.layerUI + 3;
         }
+        
+        
 
+        // Gives a cooldown to after pressing a button so it doesn't continuously scroll through the menu options.
         if (GameData.buttonCooldown)
         {
             GameData.buttonCooldownTime += 1 / (1f / Time.deltaTime);
@@ -89,12 +97,33 @@ public class PauseGame : MonoBehaviour
             }
         }
 
+        // Changes the pause menu state to be within the range
+        if (pauseMenuState >= 2)
+        {
+            pauseMenuState = 0;
+
+        }
+        
         if (pauseState >= 2)
         {
             pauseState = 0;
 
         }
+        
+        if (pauseMenuState <= -1)
+        {
+            pauseMenuState = 1;
 
+        }
+        
+        // Moves the arrow to show you are on resume
+        
+        if (pauseMenuState == 0)
+        {
+            arrow.transform.position = new Vector3(resume.rectTransform.position.x - 1.75f, resume.rectTransform.position.y + 0.1f, arrow.transform.position.z);
+        }
+
+        // Hides all pause screen UI and unpauses the game
         if (pauseState == 0)
         {
             GameData.isPaused = false;
@@ -104,7 +133,19 @@ public class PauseGame : MonoBehaviour
             exitRender.sortingOrder = 0;
             arrowRender.sortingOrder = 0;
         }
+        
+        // If you press a button while highlighting unpause, it unpauses the game
+        if (doAction && pauseMenuState == 0 && GameData.isPaused)
+        {
+            pauseState = 0;
+            doAction = false;
 
+            PlayerData.unpauseDelay = true;
+            PlayerData.unpauseDelayTime = 0f;
+        }
+
+
+        // Shows all the pause menu UI
         if (pauseState == 1)
         {
             GameData.isPaused = true;
@@ -115,37 +156,13 @@ public class PauseGame : MonoBehaviour
             exitRender.sortingOrder = GameData.layerUI + 1;
         }
 
-        if (pauseMenuState >= 2)
-        {
-            pauseMenuState = 0;
-
-        }
-
-        if (pauseMenuState == 0)
-        {
-            arrow.transform.position = new Vector3(resume.rectTransform.position.x - 1.75f, resume.rectTransform.position.y + 0.1f, arrow.transform.position.z);
-        }
-
-        if (pauseMenuState <= -1)
-        {
-            pauseMenuState = 1;
-
-        }
-
+        // Moves the arrow to show you are on exit
         if (pauseMenuState == 1)
         {
             arrow.transform.position = new Vector3(exit.rectTransform.position.x - 1.75f, exit.rectTransform.position.y + 0.1f, arrow.transform.position.z);
         }
 
-        if (doAction && pauseMenuState == 0 && GameData.isPaused)
-        {
-            pauseState = 0;
-            doAction = false;
-
-            PlayerData.unpauseDelay = true;
-            PlayerData.unpauseDelayTime = 0f;
-        }
-
+        // Ends the game if you press the exit button in the pause menu
         if (doAction && pauseMenuState == 1 && GameData.isPaused)
         {
             pauseState = 0;

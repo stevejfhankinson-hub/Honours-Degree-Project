@@ -33,11 +33,13 @@ public class TextUI : MonoBehaviour
         timeRender.sortingOrder = GameData.layerUI;
         bombRender.sortingOrder = GameData.layerUI;
 
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
         }
 
+        // Converts the time left from in numbers to minutes and seconds
         int minutes = 1;
         int seconds = (int)(GameData.gameTimeMax - GameData.gameTime);
 
@@ -92,6 +94,7 @@ public class TextUI : MonoBehaviour
             secs = "00";
         }
 
+        // Checks the score to work out if it needs addition 0s inn front of it to keep it in line
         if (PlayerData.score >= 10000)
         {
             scoreText = PlayerData.score.ToString();
@@ -107,8 +110,10 @@ public class TextUI : MonoBehaviour
             scoreText = "00" + PlayerData.score.ToString();
         }
         
+        // Displays the score
         score.text = scoreText;
 
+        // Checks the bombs amount to work out if it needs addition 0s inn front of it to keep it in line
         string bombsText = "Bombs: ";
 
         if(PlayerData.smokeBombAmount < 10)
@@ -118,6 +123,7 @@ public class TextUI : MonoBehaviour
 
         bombsText += PlayerData.smokeBombAmount.ToString();
         
+        // Displays the bomb amount and the time left
         bombs.text = bombsText;
 
         if (GameData.gameTime <= GameData.gameTimeMax)

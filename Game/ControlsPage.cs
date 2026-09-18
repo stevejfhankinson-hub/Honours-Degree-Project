@@ -45,6 +45,7 @@ public class ControlsPage : MonoBehaviour
         controlsTextRenderer.sortingOrder = 3;
         descriptionTextRenderer.sortingOrder = 3;
 
+        // Adjusts what should be visable based on what the player is currently doing in the menu
         if(GameData.showControls)
         {
             ControlsBackground.transform.position = new Vector3(0, 0, 0);
