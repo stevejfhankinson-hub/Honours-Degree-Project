@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class EnemyAnimate : MonoBehaviour
 {
+    // Used to track the enemy across different scripts
     public int enemyNumber;
+
+    // Store the sprites for each direction of the player attack animation
     public Sprite[] WalkSprites;
 
     SpriteRenderer EnemyRender;
@@ -16,15 +19,13 @@ public class EnemyAnimate : MonoBehaviour
 
     float animationTime;
 
+    // Recorded the ordered sprite cycles for each direction to make it easier to call them later in the code
     int NorthCycle1 = 0;
     int NorthCycle2 = 1;
-
     int EastCycle1 = 2;
     int EastCycle2 = 3;
-
     int SouthCycle1 = 4;
     int SouthCycle2 = 5;
-
     int WestCycle1 = 6;
     int WestCycle2 = 7;
 
@@ -37,6 +38,7 @@ public class EnemyAnimate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
@@ -46,6 +48,7 @@ public class EnemyAnimate : MonoBehaviour
 
         if (!EnemyData.bouncing[enemyNumber])
         {
+            // Works out whether the enemy is moving more in the x or y direction to work out which way the enemy is facing
             difference.x = transform.position.x - oldPos.x;
             difference.y = transform.position.y - oldPos.y;
 
@@ -65,6 +68,8 @@ public class EnemyAnimate : MonoBehaviour
 
             if (animationTime > GameData.animationTimeReset)
                 animationTime = 0f;
+
+            // Works out the direction the enemy is facing and sets the correct sprite for the animation cycle
 
             // East and West
             if (biggerAxis.x >= biggerAxis.y)
@@ -136,6 +141,7 @@ public class EnemyAnimate : MonoBehaviour
 
             }
 
+            // Record the position of the enemy every 0.5 seconds to work out the direction the enemy is facing
             positionTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
 
             if (positionTime >= 0.5f)

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
+    // Used to track the enemy across different scripts
     public int enemyNumber;
+
     public GameObject player;
     public GameObject damageSpace;
     public GameObject smoke;
@@ -46,6 +48,7 @@ public class EnemyHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Resets everything to the default values when the game is reset
         if (EnemyData.enemyReset[enemyNumber])
         {
             EnemyData.health[enemyNumber] = maxHealth;
@@ -55,15 +58,18 @@ public class EnemyHealth : MonoBehaviour
             EnemyData.enemyReset[enemyNumber] = false;
         }
 
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
         }
 
+        // Gets the distance between the enemy and the player
         Dis = Vector2.Distance(transform.position, player.transform.position);
 
         moveSpeed = maxSpeed;
 
+        // Slows the enemy down if it is there is fog or rain
         if (GameData.isFog)
         {
             moveSpeed = maxSpeed * 0.85f;
@@ -74,8 +80,11 @@ public class EnemyHealth : MonoBehaviour
             moveSpeed = maxSpeed * 1.15f;
         }
 
+        // Sets the enemy speed to moveSpeed variable which is affected by being converted to be the speed for a frame
+        // and modified for the speed of the game to make it go faster or slower
         walkSpeed = (moveSpeed / (1 / Time.deltaTime)) * GameData.timeSpeed;
 
+        // If the enemy is meant to bounce of the player is will move towards the bounce position unti it is meant to stop bouncing
         if (EnemyData.bouncing[enemyNumber])
         {
             bounceTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
@@ -94,6 +103,7 @@ public class EnemyHealth : MonoBehaviour
 
         if (!EnemyData.bouncing[enemyNumber])
         {
+            // Records the position of the enemy every posTime seconds to be used for bouncing off the player
             recordTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
 
             if (recordTime >= posTime)
@@ -102,6 +112,7 @@ public class EnemyHealth : MonoBehaviour
                 recordTime = 0;
             }
 
+            // If a enemy is too close to the player it will take the parcel from the player if they player is not attacking
             if (Dis <= minRange)
             {
                 if (!PlayerData.attacking && !PlayerData.dashing && PlayerData.playerItem)
@@ -115,6 +126,7 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
+        // Works out the difference between where the player can damage the enemy and enemy position to see if the player is close enough to damage the enemy
         damageDifference.x = damageSpace.transform.position.x - transform.position.x;
         damageDifference.y = damageSpace.transform.position.y - transform.position.y;
 
@@ -128,6 +140,7 @@ public class EnemyHealth : MonoBehaviour
             damageDifference.y = -damageDifference.y;
         }
 
+        // When the enemy can be damaged it will take damage when in the player is attacking. If the player is dashing it will take more damage
         if (damage)
         {
             if (damageRange >= damageDifference.x && damageRange >= damageDifference.y && (PlayerData.attacking || PlayerData.dashing))
@@ -145,6 +158,7 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
+        // If the enemy has just been damaged it will not be able to take damage for a certain time
         if (!damage)
         {
             damageTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
@@ -155,7 +169,9 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
-        if(EnemyData.health[enemyNumber] <= 0.0f && !EnemyData.enemiesRespawn[enemyNumber])
+        // Makes the enemy reset and put it in a position so it cannot be seen. If it took a parcel off
+        // a player it will give it back to the player and set the score multiplier to 1.5 for that parcel
+        if (EnemyData.health[enemyNumber] <= 0.0f && !EnemyData.enemiesRespawn[enemyNumber])
         {
             EnemyData.enemiesRespawn[enemyNumber] = true;
             transform.position = new Vector3(50, 50, transform.position.z);
@@ -170,6 +186,7 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
+        // If the enemy is in a smoke bomb it will become dizzy for a certain amount of time so it cannot walk
         if(!EnemyData.isDizzy[enemyNumber] && PlayerData.isSmoke && (Vector2.Distance(transform.position, smoke.transform.position) < smoke.transform.localScale.x / 2f))
         {
             EnemyData.isDizzy[enemyNumber] = true;
@@ -186,6 +203,7 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
+        // After a set amount of time, the enemy will respawn after it has died
         if(EnemyData.enemiesRespawn[enemyNumber])
         {
             respawnTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
