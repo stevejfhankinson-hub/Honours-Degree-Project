@@ -19,16 +19,19 @@ public class VillagerDummy : MonoBehaviour
     {
         DummyRender = GetComponent<SpriteRenderer>();
 
+        // Shows the dummy village the player is looking for while in the big house
         if (PlayerData.insideBigHouse)
         {
             DummyRender.sortingOrder = GameData.layerInsideHouse;
         }
 
+        // Hides the dummy village the player is looking for while in the big house
         if (!PlayerData.insideBigHouse)
         {
             DummyRender.sortingOrder = 0;
         }
 
+        // Works out which villager the player is looking for
         bool gotTarget = false;
 
         for(int i = 0; i < 3; i++)
@@ -40,7 +43,8 @@ public class VillagerDummy : MonoBehaviour
             }
         }
 
-        if(!gotTarget)
+        // Once the player has given the villager their parcel, the dummy villager will disappear
+        if (!gotTarget)
         {
             DummyRender.sortingOrder = 0;
         }

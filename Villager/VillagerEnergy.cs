@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class VillagerEnergy : MonoBehaviour
 {
+    // Used to track the villager across different scripts
     public int villagerNumber;
+
     public TextMeshPro villagerEnergyText;
     bool lostEnergy = false;
 
@@ -28,6 +30,7 @@ public class VillagerEnergy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // While the villager is walking to its next spot, it works out how much energy they should lose
         if (VillagerData.villagerActions[villagerNumber] != VillagerData.WaitingAction)
         {
             lostEnergy = false;
@@ -38,6 +41,7 @@ public class VillagerEnergy : MonoBehaviour
             }
         }
 
+        // When the villager stops at the house it will lose the energy which was calculated
         if (VillagerData.villagerActions[villagerNumber] == VillagerData.WaitingAction)
         {
             if (!lostEnergy)
@@ -47,6 +51,7 @@ public class VillagerEnergy : MonoBehaviour
                 loseEnergy = 0f;
             }
 
+            // Once the villager's energy is below 0 it will want to go to a cafe
             if (VillagerData.villagerEnergy[villagerNumber] <= 0)
             {
                 VillagerData.villagerCafe[villagerNumber] = true;
@@ -58,6 +63,7 @@ public class VillagerEnergy : MonoBehaviour
             }
         }
 
+        // Works out the percentage  a villager's energy is on and displays it avove its head
         villagerEnergyText.sortingOrder = VillagerData.villagerSortingOrder[villagerNumber];
         villagerEnergyText.transform.position = VillagerData.villagerPosition[villagerNumber];
         villagerEnergyText.transform.position += new Vector3(0, 1f, 0);

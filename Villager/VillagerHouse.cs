@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class VillagerHouse : MonoBehaviour
 {
+    // Used to track the villager across different scripts
     public int villagerNumber;
     public Transform housesParent;
 
@@ -19,6 +20,7 @@ public class VillagerHouse : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Gets all the house enterance positions
         housePositions = new Transform[housesParent.childCount];
 
         for (int i = 0; i < housesParent.childCount; i++)
@@ -35,6 +37,7 @@ public class VillagerHouse : MonoBehaviour
 
         VillagerRender = GetComponent<SpriteRenderer>();
 
+        // Checks whether the villager is in the house
         for (int i = 0; i < housesParent.childCount; i++)
         {
             if(transform.position.y <= housePositions[i].position.y + maxY && transform.position.y >= housePositions[i].position.y - minY
@@ -45,11 +48,13 @@ public class VillagerHouse : MonoBehaviour
             }
         }
 
+        // Makes the villager appear outside if it is outside
         if (!inHouse)
         {
             VillagerRender.sortingOrder = GameData.layerOutsideHouse;
         }
 
+        // Makes the villager appear in the house, if the player is in the same house
         if (inHouse)
         {
             if (PlayerData.insideSmallHouse[houseNumber])
@@ -63,6 +68,7 @@ public class VillagerHouse : MonoBehaviour
             }
         }
 
+        // Makes the villager face south when they stop in the house
         for(int i = 0; i < housesParent.childCount; i++)
         {
             if(Vector2.Distance(transform.position, housePositions[i].position) < 0.1f)

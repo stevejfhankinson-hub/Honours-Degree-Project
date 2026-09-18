@@ -9,10 +9,15 @@ using UnityEngine;
 
 public class VillagerWalking : MonoBehaviour
 {
+    // Used to track the enemy across different scripts
     public int villagerNumber;
+
     public GameObject Player;
     public GameObject InteractSpace;
+
+    //
     public Sprite[] WalkSprites;
+
     public Transform levelPathsParent;
     public Transform housePathsParent;
     public Transform housesParent;
@@ -86,6 +91,7 @@ public class VillagerWalking : MonoBehaviour
     {
         VillagerData.villagerActions[villagerNumber] = VillagerData.PatrolAction;
 
+        // Prepares every possible space for the villager to go to
         lvlPaths = new Transform[levelPathsParent.childCount];
 
         housePaths = new Transform[housePathsParent.childCount];
@@ -163,11 +169,12 @@ public class VillagerWalking : MonoBehaviour
         houseLv7[1] = houses[8].transform.position;
         houseLv7[2] = houses[9].transform.position;
 
+        // Selects 3 main houses that the villager will go to
         VillagerData.homeNumber[villagerNumber] = Random.Range(0, 10);
         VillagerData.building1Number[villagerNumber] = Random.Range(0, 10);
         VillagerData.building2Number[villagerNumber] = Random.Range(0, 10);
 
-        
+        // The first target location is picked for the villager
         int nextLocation = Random.Range(0, 3);
 
         if (nextLocation == 0)
@@ -185,6 +192,7 @@ public class VillagerWalking : MonoBehaviour
             VillagerData.targetBuildingNumber[villagerNumber] = VillagerData.building2Number[villagerNumber];
         }
 
+        // The villager is sent to its starting house
         VillagerData.startBuildingNumber[villagerNumber] = VillagerData.homeNumber[villagerNumber];
         VillagerData.targetBuildingNumber[villagerNumber] = nextLocation;
         
@@ -194,8 +202,10 @@ public class VillagerWalking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Resets everything to the default values when the game is reset
         if (VillagerData.villagerReset[villagerNumber])
         {
+            // Sets target position for the villafer
             int nextLocation = Random.Range(0, 3);
 
             if (nextLocation == 0)
@@ -213,6 +223,7 @@ public class VillagerWalking : MonoBehaviour
                 VillagerData.targetBuildingNumber[villagerNumber] = VillagerData.building2Number[villagerNumber];
             }
 
+            // Sends the villager to its starting house
             transform.position = houses[VillagerData.homeNumber[villagerNumber]].transform.position;
 
             VillagerData.villagerParcel[villagerNumber] = false;
@@ -221,6 +232,7 @@ public class VillagerWalking : MonoBehaviour
 
         VillagerRender = GetComponent<SpriteRenderer>();
         
+        // Works out the iteraction spot for the villager for the player to be in
         if (VillagerData.directionNorth[villagerNumber])
         {
             InteractSpace.transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, InteractSpace.transform.position.z);
@@ -250,11 +262,14 @@ public class VillagerWalking : MonoBehaviour
 
         moveSpeed = maxSpeed;
 
+        // Slows the villager down if there is fog
+
         if (GameData.isFog)
         {
             moveSpeed = maxSpeed * 0.85f;
         }
 
+        // If the villager is clise enough the player it will check if the villager has the player's parcel and give them points
         if (Vector2.Distance(InteractSpace.transform.position, Player.transform.position) < 0.2f)
         {
             if (VillagerData.villagerParcel[villagerNumber])
@@ -270,6 +285,8 @@ public class VillagerWalking : MonoBehaviour
         VillagerData.waitEnergy[villagerNumber] = false;
 
         VillagerData.villagerPosition[villagerNumber] = transform.position;
+        
+        // Speeds up the villager if it is raining
         if (GameData.isRaining)
         {
             moveSpeed = maxSpeed * 1.15f;
@@ -286,9 +303,11 @@ public class VillagerWalking : MonoBehaviour
             }
         }
 
+
         if (VillagerData.parcelCooldown[villagerNumber])
         {
             parcelCooldownTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
+
             if (parcelCooldownTime >= 4)
             {
                 VillagerData.parcelCooldown[villagerNumber] = false;
@@ -296,6 +315,8 @@ public class VillagerWalking : MonoBehaviour
             }
         }
 
+        // If the villager is close enough to the player it will stop moving and just look at the player
+        // The code will not continue past this point if the villager is within range of the player
         if (Vector2.Distance(transform.position, Player.transform.position) < 2.2f && !VillagerData.parcelCooldown[villagerNumber])
         {
             int lookAtPlayer = 0;
@@ -378,6 +399,7 @@ public class VillagerWalking : MonoBehaviour
         {
             currentWaitTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
 
+            // If the villagers are in the cafes, there energy will be set to full
             if (Vector2.Distance(transform.position, houseLv3ToLv4[2]) < 0.1f)
             {
                 VillagerData.villagerEnergy[villagerNumber] = VillagerData.maxFood;
@@ -390,9 +412,11 @@ public class VillagerWalking : MonoBehaviour
 
             if (currentWaitTime > maxWaitTime)
             {
+                // Sets the villagers new starting position to where it is
                 currentWaypointIndex = 0;
                 VillagerData.startBuildingNumber[villagerNumber] = VillagerData.targetBuildingNumber[villagerNumber];
                 
+                // If the villager is out of the energy it will work out the closest cafe to it
                 if (VillagerData.villagerCafe[villagerNumber])
                 {
                     VillagerData.villagerActions[villagerNumber] = VillagerData.EnergyAction;
@@ -413,6 +437,7 @@ public class VillagerWalking : MonoBehaviour
                     }
                 }
 
+                // If the villager is not out of energy it will randomly pick one of its 3 buildings to go to
                 if(!VillagerData.villagerCafe[villagerNumber])
                 {
                     VillagerData.villagerActions[villagerNumber] = VillagerData.PatrolAction;
@@ -438,6 +463,7 @@ public class VillagerWalking : MonoBehaviour
             }
         }
 
+        // Gets to the villager to walk
         if (VillagerData.villagerActions[villagerNumber] != VillagerData.WaitingAction)
         {
             HouseNumberToBool();
@@ -447,6 +473,7 @@ public class VillagerWalking : MonoBehaviour
             MoveToWaypoint(target);
         }
 
+        // Works out whether the villager is moving more in the x or y direction to work out which way the enemy is facing
         Vector2 positionDifference;
         positionDifference.x = transform.position.x - oldPos.x;
         positionDifference.y = transform.position.y - oldPos.y;
@@ -510,6 +537,7 @@ public class VillagerWalking : MonoBehaviour
             }
         }
 
+        // If the villager is walking it will continue to be animated
         if (oldPos.x == transform.position.x && oldPos.y == transform.position.y)
         {
             VillagerData.waitEnergy[villagerNumber] = true;
@@ -523,6 +551,7 @@ public class VillagerWalking : MonoBehaviour
                 animationTime = 0f;
         }
 
+        // Gets the villager to be the correct sprite for the direction it is facing and the cycle it is on
         if (VillagerData.directionNorth[villagerNumber])
         {
             if (animationTime < GameData.animationTimeReset / 2f)
@@ -560,6 +589,8 @@ public class VillagerWalking : MonoBehaviour
         }
     }
 
+    // Works out every possible combination a villager can take to go each house.
+    // It works out how many checkpoints there is and the next checkpoint location it is going to
     private Vector3 GetTarget()
     {
         for (int i = 0; i < 3; i++)
@@ -3044,6 +3075,8 @@ public class VillagerWalking : MonoBehaviour
 
         return transform.position;
     }
+
+    // Converts the house start number and house target number to boolean
     private void HouseNumberToBool()
     {
         for (int i = 0; i < 3; i++)
@@ -3179,6 +3212,9 @@ public class VillagerWalking : MonoBehaviour
             targetLv5ToLv6[0] = true;
         }
     }
+
+    // Gets the villager to walk until it reaches it's target
+    // If it is the villager's last checkpoint, it will stop for a bit
     private void MoveToWaypoint(Vector3 target)
     {
         transform.position = Vector2.MoveTowards(transform.position, target, walkSpeed);
