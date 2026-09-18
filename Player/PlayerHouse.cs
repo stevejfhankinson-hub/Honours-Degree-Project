@@ -24,6 +24,7 @@ public class PlayerHouse : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Creates arrays to hold the house entrances and their states
         houseEnterance = new Transform[houseEnteranceParent.childCount];
 
         for (int i = 0; i < houseEnteranceParent.childCount; i++)
@@ -50,6 +51,7 @@ public class PlayerHouse : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
@@ -57,13 +59,15 @@ public class PlayerHouse : MonoBehaviour
 
         PlayerRender = GetComponent<SpriteRenderer>();
 
-        for(int i = 0; i < ExteriorRender.Length; i++)
+        // Gets the tilemap renderers for the house exteriors and interiors
+        for (int i = 0; i < ExteriorRender.Length; i++)
         {
             ExteriorRender[i] = houseExterior[i].GetComponent<TilemapRenderer>();
             InteriorRender[i] = houseInterior[i].GetComponent<TilemapRenderer>();
             GrassRender[i] = houseGrass[i].GetComponent<TilemapRenderer>();
         }
 
+        // Works out the area inside each house based on the entrance position
         for (int i = 0; i < houseEnterance.Length; i++)
         {
             if(i == 10)
@@ -108,19 +112,18 @@ public class PlayerHouse : MonoBehaviour
         }
 
         PlayerData.checkHouse = false;
-        //bool checkHouse = false;
 
         for(int i = 0; i < 12; i ++)
         {
             PlayerData.insideSmallHouse[i] = false;
         }
 
-        for(int i = 0; i < houseEnterance.Length;i++)
+        // Adjustes the sorting order for when the player is inside a house or outside a house so that it looks that way
+        for (int i = 0; i < houseEnterance.Length;i++)
         {
             if (inHouse[i])
             {
                 PlayerData.checkHouse = true;
-                //checkHouse = true;
                 PlayerRender.sortingOrder = GameData.layerInsideHouse;
                 InteriorRender[i].sortingOrder = GameData.layerInsideHouse - 1;
                 ExteriorRender[i].sortingOrder = GameData.layerInsideHouse - 2;
@@ -147,6 +150,7 @@ public class PlayerHouse : MonoBehaviour
                 InteriorRender[i].sortingOrder = GameData.layerOutsideHouse - 3;
                 ExteriorRender[i].sortingOrder = GameData.layerOutsideHouse - 1;
                 GrassRender[i].sortingOrder = GameData.layerOutsideHouse - 2;
+
 
                 if (i == 10)
                 {

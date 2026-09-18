@@ -8,43 +8,45 @@ public class PlayerWalking : MonoBehaviour
 {
     public float maxSpeed;
     float moveSpeed;
+
+    // Stores the input action for walking
     public InputAction Walking;
+
+    // Store the sprites for each direction of the player walking animation
     public Sprite[] WalkSprites;
+
     SpriteRenderer PlayerRender;
     Rigidbody2D PlayerRigidbody;
 
     float animationTime;
 
+    // Recorded the ordered sprite cycles for each direction to make it easier to call them later in the code
     int NorthCycle1 = 0;
     int NorthCycle2 = 1;
-
     int NorthEastCycle1 = 2;
     int NorthEastCycle2 = 3;
-
     int EastCycle1 = 4;
     int EastCycle2 = 5;
-
     int SouthEastCycle1 = 6;
     int SouthEastCycle2 = 7;
-
     int SouthCycle1 = 8;
     int SouthCycle2 = 9;
-
     int SouthWestCycle1 = 10;
     int SouthWestCycle2 = 11;
-
     int WestCycle1 = 12;
     int WestCycle2 = 13;
-
     int NorthWestCycle1 = 14;
     int NorthWestCycle2 = 15;
 
     Vector2 walking;
+
+    // Enables the input actions
     private void OnEnable()
     {
         Walking.Enable();
     }
 
+    // Disables the input actions
     private void OnDisable()
     {
         Walking.Disable();
@@ -59,6 +61,7 @@ public class PlayerWalking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Resets everything to the default values when the game is reset
         if(PlayerData.playerReset)
         {
             transform.position = new Vector3(7, -15, 0);
@@ -88,6 +91,8 @@ public class PlayerWalking : MonoBehaviour
 
             PlayerData.playerReset = false;
         }
+
+        // Stops the code from progressing past this point if the game is paused
         if (GameData.isPaused)
         {
             return;
@@ -95,6 +100,7 @@ public class PlayerWalking : MonoBehaviour
 
         moveSpeed = maxSpeed;
 
+        // Slows the player down if it is there is fog or rain
         if (GameData.isFog)
         {
             moveSpeed = maxSpeed * 0.85f;
@@ -105,16 +111,14 @@ public class PlayerWalking : MonoBehaviour
             moveSpeed = maxSpeed * 0.85f;
         }
 
+        // Sets the player speed to moveSpeed variable which is affected by being converted to be the speed for a frame
+        // and modified for the speed of the game to make it go faster or slower
         PlayerData.walkSpeed = (moveSpeed / (1 / Time.deltaTime)) * GameData.timeSpeed;
 
         PlayerRender = GetComponent<SpriteRenderer>();
         PlayerRigidbody = GetComponent<Rigidbody2D>();
 
-        if (GameData.isPaused)
-        {
-            return;
-        }
-
+        // Gets the direction the player is moving in from the input system
         PlayerData.moveDirection = Walking.ReadValue<Vector2>();
 
         if(PlayerData.resetSprite)
@@ -123,6 +127,8 @@ public class PlayerWalking : MonoBehaviour
             PlayerRender.sprite = WalkSprites[PlayerData.returnSprite];
         }
 
+        // If the player is going in any direction it starts recording how long it has been moving for
+        // and resets it after a certain time to loop the animation
         if (PlayerData.moveDirection.x != 0 || PlayerData.moveDirection.y != 0)
         {
             animationTime += (1f / (1f / Time.deltaTime)) * GameData.timeSpeed;
@@ -130,6 +136,7 @@ public class PlayerWalking : MonoBehaviour
             if (animationTime > GameData.animationTimeReset)
                 animationTime = 0f;
 
+            // When the player can walk, it moves the player and makes them have the right sprite for the direction they are moving in the animation cycle.
             if (!PlayerData.dashing && !PlayerData.attacking)
             {
                 transform.Translate(PlayerData.moveDirection.x * PlayerData.walkSpeed, PlayerData.moveDirection.y * PlayerData.walkSpeed, 0f);
